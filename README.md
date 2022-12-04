@@ -1,4 +1,6 @@
 
+# Clipping the Podcast
+
 ## How I thought about the problem
 I think there are 3 main things to highlight about the problem.
 1. The dataset provided is small
@@ -45,35 +47,43 @@ There were a few obstacles to this approach, that are worth mentioning (and ulti
 1. Text summarization models are typically trained on news articles, which are typically much shorter than a podcast. I was not sure how well this would work on a podcast. They also typically have a token limit, which would be a problem for a podcast.
 2. The sliding window approach to candidate clips, would not work well with a document embedding model. The model would need to be run on each candidate clip, which would be very slow.
 
+# Deploying a solution
+
+Typically for Machine Learning POCs, I find it useful to draw a line between the solution and the deployment. This is because the deployment of a POC, is almost always a temporary implementation. I will build out a python module that implements the solution, and then I will have the deployment consume that implementation.
+
+This allows me to focus on iterating on the solution (often in a Jupyter Notebook), and then I can focus on the deployment once I am happy with the solution.
+
+NB: I am assuming that the user has access audio transcripts in the same format as the sample data. I have intentially not built any data validation into this POC.
+
+## The Python Module
+
+In this case, I have built the `Clipper` module (see `clipper.py`), which implements the solution. It takes in transcript data, audio data & a desired save location for the audio clip.
+
+It has a two step process for finding the best clip of audio, and then producing the physical audio file based on this.
+
+A more complete run-through is shown in `demo.ipynb`
+
+```python
+from clipper import Clipper
+# Work out the best audio clip
+clipper = Clipper(audio_data, data, save_loc='/tmp/clip.wav')
+# Cut the given audio file, to produce the slip.
+clipper.cut_audio(result['window_start_token'], result['window_end_token'], clipper.item_list)
+```
+
+## The API
+To minimally deploy the solution, I have utilized FASTAPI to build a simple API (see `main.py`).
+
+It has four main sets of functionality, which are shown in `demo.ipynb`
+1. Upload a transcript file, which will trigger the solution to find the best clip of audio. It returns an `_id` which is used in the other steps.
+2. Upload an audio file (if the user wishes to generate an actual audio file rather than just the clip transcript) using the `_id` returned in Step 1
+3. Get the transcript of the best clip of audio using the `_id` returned in Step 1
+4. Get the audio file of the best clip of audio using the `_id` returned in Step 1
+
+
+A full run-through of utilizing the API is shown in `demo.ipynb`.
+
+One considerable thing to note, is that the API is that is that I utilized the local filesystem store any data rather than a database.
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## The AI Solution
-
-## The Deployment Solution
-
-
-
-
-
-
-
-
-
-## Things that I excluded from the solution
-- Data validation

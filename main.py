@@ -24,10 +24,6 @@ def process_clip(_id, data):
     print("Done processing clip")
 
 
-
-
-
-
 @app.post("/clip")
 async def clip(request:Request, background_tasks: BackgroundTasks):
 
