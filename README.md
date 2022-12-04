@@ -22,11 +22,11 @@ Given the above, my solution needed to accomplish the following:
 2. Create candidate clips of audio and generate a representation of each
 3. Find the most similar audio clip to the podcast representation
 
-To generate representations of the whole or parts of the podcast, I utilized a pre-trained language model's word embeddings and took the mean of them. This is a common approach to generate a representation of a document, and is used in many NLP applications. There are definitely more sophisticated approaches to generate these representations, taking into account each word's in it's context. But this approach had two main advantages:
+To generate representations of the whole or parts of the podcast, I utilized a pre-trained language model's word embeddings and took the mean of them across any given document. This is a common approach to generate a representation of a document, and is used in many NLP applications. There are definitely more sophisticated approaches to generate these representations, taking into account each word'sc context. But this approach had two main advantages:
 1. I did not have to worry about the token limit of the model
 2. I could calculate each word's embedding once, and then calculate the "representation" of any sliding window by taking of the mean of the word embeddings in that window - rather than having to run the model on each window.
 
-To generate candidate clips, I again took the simplest approach. Using 150 tokens as a good heuristic of the number of word's typically spoken in a minute, I slid a window over the tokens. For a podcast of N tokens, I would generate N-150 candidate clips.
+To generate candidate clips, I again took a simple. Using 150 tokens as a good heuristic of the number of word's typically spoken in a minute, I slid a window over the tokens. For a podcast of N tokens, I would generate N-150 candidate clips.
 
 For each candidate clip, I calculated the representation of the clip, and then calculated the cosine similarity between the podcast representation and the clip representation. The clip with the highest cosine similarity was the most similar clip to the podcast.
 
