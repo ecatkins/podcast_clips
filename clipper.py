@@ -67,7 +67,12 @@ class Clipper:
 
         return max_gap_index
 
-    def cut_audio(self, window_start, window_end, item_list):
+    def cut_audio(self, result):
+        
+        item_list = result['item_list']
+        window_start = result['window_start_token']
+        window_end = result['window_end_token']
+
         start_time = item_list[window_start]['start_time']
         end_time = item_list[window_end]['end_time']
 
