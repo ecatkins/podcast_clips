@@ -1,7 +1,9 @@
 
-# Podcast Clipper - The Machine Learning Problem
+# Podcast Clipper 
 
-## How I thought about the problem
+## The Machine Learning Problem
+
+### How I thought about the problem
 I think there are 3 main things to highlight about the problem.
 1. The dataset provided is small
 2. There is both audio and text data available in the sample dataset
@@ -17,7 +19,7 @@ For #3, the following text was key, that the solution should `highlight engaging
 `Representative` audio seemed more tractable. Although there is no absolute objective measure I could use, deep learning at it's core is about generating latent representations of something (text/audio/images) - therefore it seemed reasonable to use a model to generate a latent representation of the audio, and then use that representation to find the most similar clip.
 
 
-## My Solution to the Problem
+### My Solution to the Problem
 
 Given the above, my solution needed to accomplish the following:
 1. Generate a representation of the podcast
@@ -37,7 +39,7 @@ I was initially skeptical that this approach would work well. Intuitively it see
 The final part of my solution, was to solve the problem of a clean start to the candidate clip. Given, the sliding window approach, there was no guarantee the audio would start at a natural pause in the podcast. To mitigate this, I searched around the sliding window for the start token, that would maximise the audio break between it, and the previous word. This was a simple heuristic, but it seemed to work well.
 
 
-## A better approach?
+### A better approach?
 
 As mentioned above, I think the main risk with my solution, is that it may be attracted to generic pieces of the podcast, rather than the most engaging.
 
@@ -47,15 +49,15 @@ There were a few obstacles to this approach, that are worth mentioning (and ulti
 1. Text summarization models are typically trained on news articles, which are typically much shorter than a podcast. I was not sure how well this would work on a podcast. They also typically have a token limit, which would be a problem for a podcast.
 2. The sliding window approach to candidate clips, would not work well with a document embedding model. The model would need to be run on each candidate clip, which would be very slow.
 
-# The Implemenation & Deployment
+## Implemenation & Deployment
 
 Typically for Machine Learning POCs, I find it useful to draw a line between the solution and the deployment. This is because the deployment of a POC, is almost always a temporary implementation. I will build out a python module that implements the solution, and then I will have the deployment consume that implementation.
 
 This allows me to focus on iterating on the solution (often in a Jupyter Notebook), and then I can focus on the deployment once I am happy with the solution.
 
-NB: I am assuming that the user has access audio transcripts in the same format as the sample data. I have intentially not built any data validation into this POC.
+NB: I am assuming that the user has access audio transcripts in the same format as the sample data. I have intentionally not built any data validation into this POC.
 
-## The Python Module
+### The Python Module
 
 In this case, I have built the `Clipper` module (see [clipper.py](clipper.py)), which implements the solution. It takes in transcript data, audio data & a desired save location for the audio clip.
 
@@ -72,8 +74,8 @@ result = clipper.run()
 clipper.cut_audio(result)
 ```
 
-## The API
-To minimally deploy the solution, I have utilized FASTAPI to build a simple API (see [main.py](main.py)).
+### The API
+To minimally deploy the solution, I have utilized FastAPI to build a simple API (see [main.py](main.py)).
 
 It has four main sets of functionality, which are shown in [demo.ipynb](demo.ipynb):
 1. Upload a transcript file, which will trigger the solution to find the best clip of audio. It returns an `_id` which is used in the other steps.

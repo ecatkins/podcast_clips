@@ -84,6 +84,6 @@ async def get_audio(_id: str):
     except FileNotFoundError:
         return {"error": "not result found"}
 
-    save_loc = self.cut_audio(_id, result, audio)
+    save_loc = cut_audio(_id, result, audio)
 
     return {'audio_loc':save_loc}
