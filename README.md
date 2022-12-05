@@ -1,5 +1,5 @@
 
-# Clipping the Podcast
+# Podcast Clipper - The Machine Learning Problem
 
 ## How I thought about the problem
 I think there are 3 main things to highlight about the problem.
@@ -24,7 +24,7 @@ Given the above, my solution needed to accomplish the following:
 2. Create candidate clips of audio and generate a representation of each
 3. Find the most similar audio clip to the podcast representation
 
-To generate representations of the whole or parts of the podcast, I utilized a pre-trained language model's word embeddings and took the mean of them across any given document. This is a common approach to generate a representation of a document, and is used in many NLP applications. There are definitely more sophisticated approaches to generate these representations, taking into account each word's context. But this approach had two main advantages:
+To generate representations of the whole or parts of the podcast, I utilized a pre-trained language model's word embeddings and took the mean of them across any given document. This is a common approach to generate a representation of a document. There are definitely more sophisticated approaches to generate these representations, one's that take into account the order of the words and the relationships between words. But this approach had two main advantages:
 1. I did not have to worry about the token limit of the model
 2. I could calculate each word's embedding once, and then calculate the "representation" of any sliding window by taking of the mean of the word embeddings in that window - rather than having to run the model on each window.
 
@@ -32,7 +32,7 @@ To generate candidate clips, I again took a simple approach. Using 150 tokens as
 
 For each candidate clip, I calculated the representation of the clip, and then calculated the cosine similarity between the podcast representation and the clip representation. The clip with the highest cosine similarity was the most similar clip to the podcast.
 
-I was initially skeptical, that this approach would work well. Intuitively it seemed to be that there was a risk, that this would generate "generic" (boring) parts of the podcast, the opposite of the most engaging parts. But I was pleasantly suprised with the results on the podcasts I tested.
+I was initially skeptical that this approach would work well. Intuitively it seemed to be that there was a risk that this would generate "generic" (boring) parts of the podcast, the opposite of the most engaging parts. But I was pleasantly suprised with the results on the podcasts I tested.
 
 The final part of my solution, was to solve the problem of a clean start to the candidate clip. Given, the sliding window approach, there was no guarantee the audio would start at a natural pause in the podcast. To mitigate this, I searched around the sliding window for the start token, that would maximise the audio break between it, and the previous word. This was a simple heuristic, but it seemed to work well.
 
@@ -47,7 +47,7 @@ There were a few obstacles to this approach, that are worth mentioning (and ulti
 1. Text summarization models are typically trained on news articles, which are typically much shorter than a podcast. I was not sure how well this would work on a podcast. They also typically have a token limit, which would be a problem for a podcast.
 2. The sliding window approach to candidate clips, would not work well with a document embedding model. The model would need to be run on each candidate clip, which would be very slow.
 
-# Deploying a solution
+# The Implemenation & Deployment
 
 Typically for Machine Learning POCs, I find it useful to draw a line between the solution and the deployment. This is because the deployment of a POC, is almost always a temporary implementation. I will build out a python module that implements the solution, and then I will have the deployment consume that implementation.
 
@@ -67,8 +67,9 @@ A more complete run-through is shown in `demo.ipynb`
 from clipper import Clipper
 # Work out the best audio clip
 clipper = Clipper(audio_data, data, save_loc='/tmp/clip.wav')
+result = clipper.run()
 # Cut the given audio file, to produce the slip.
-clipper.cut_audio(result['window_start_token'], result['window_end_token'], clipper.item_list)
+clipper.cut_audio(result)
 ```
 
 ## The API
@@ -83,7 +84,7 @@ It has four main sets of functionality, which are shown in `demo.ipynb`
 
 A full run-through of utilizing the API is shown in `demo.ipynb`. The demo should allow you to run the API locally, and then interact with it using the `requests` library - at the end of the demo, you should be able to play the resulting audio clip from within the notebook!S
 
-One considerable thing to note, is that the API is that is that I utilized the local filesystem store any data rather than a database.
+One notable decision I made was to utilize a local file system to store the audio and transcript results. This is because I wanted to keep the POC simple, and I did not want to have to worry about setting up a database & large artifact store. However, this is not a scalable solution, and would need to be replaced with a database in a production environment.
 
 
 
