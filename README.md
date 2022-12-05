@@ -57,11 +57,11 @@ NB: I am assuming that the user has access audio transcripts in the same format 
 
 ## The Python Module
 
-In this case, I have built the `Clipper` module (see `clipper.py`), which implements the solution. It takes in transcript data, audio data & a desired save location for the audio clip.
+In this case, I have built the `Clipper` module (see [clipper.py](clipper.py)), which implements the solution. It takes in transcript data, audio data & a desired save location for the audio clip.
 
 It has a two step process for finding the best clip of audio, and then producing the physical audio file based on this.
 
-A more complete run-through is shown in `demo.ipynb`
+A more complete run-through is shown in [demo.ipynb](demo.ipynb).
 
 ```python
 from clipper import Clipper
@@ -73,16 +73,16 @@ clipper.cut_audio(result)
 ```
 
 ## The API
-To minimally deploy the solution, I have utilized FASTAPI to build a simple API (see `main.py`).
+To minimally deploy the solution, I have utilized FASTAPI to build a simple API (see [main.py](main.py)).
 
-It has four main sets of functionality, which are shown in `demo.ipynb`
+It has four main sets of functionality, which are shown in [demo.ipynb](demo.ipynb):
 1. Upload a transcript file, which will trigger the solution to find the best clip of audio. It returns an `_id` which is used in the other steps.
 2. Upload an audio file (if the user wishes to generate an actual audio file rather than just the clip transcript) using the `_id` returned in Step 1
 3. Get the transcript of the best clip of audio using the `_id` returned in Step 1
 4. Get the audio file of the best clip of audio using the `_id` returned in Step 1
 
 
-A full run-through of utilizing the API is shown in `demo.ipynb`. The demo should allow you to run the API locally, and then interact with it using the `requests` library - at the end of the demo, you should be able to play the resulting audio clip from within the notebook!S
+A full run-through of utilizing the API is shown in [demo.ipynb](demo.ipynb). The demo should allow you to run the API locally, and then interact with it using the `requests` library - at the end of the demo, you should be able to play the resulting audio clip from within the notebook!S
 
 One notable decision I made was to utilize a local file system to store the audio and transcript results. This is because I wanted to keep the POC simple, and I did not want to have to worry about setting up a database & large artifact store. However, this is not a scalable solution, and would need to be replaced with a database in a production environment.
 
