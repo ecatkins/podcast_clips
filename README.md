@@ -14,9 +14,9 @@ Given #1, I decided to focus on solutions that would not require training/finetu
 
 With regards to #2, it is likely a customer-facing solution would require analysis of the audio, either to conduct speech-to-text transcription to allow downstream NLP analysis and/or to allow a multi-modal approach that would use both forms of data to clip the audio. However, I decided to focus on the text data, making an assumption that speech-to-text would already be built into the company's existing products.
 
-For #3, the following text was key, that the solution should `highlight engaging or representative spots`. I decided there was no objective way to highlight `engaging` spots in the audio given the data - this would likely require user feedback data, potentially A/B testing different clips of audio, to given a score for measuring engagement. 
+For #3, the following text was key, that the solution should `highlight engaging or representative spots`. I decided there was no effective way to highlight `engaging` spots in the audio given the data - this would likely require user feedback data, potentially A/B testing different clips of audio, to generate a score for measuring engagement. 
 
-`Representative` audio seemed more tractable. Although there is no absolute objective measure I could use, deep learning at it's core is about generating latent representations of something (text/audio/images) - therefore it seemed reasonable to use a model to generate a latent representation of the audio, and then use that representation to find the most similar clip.
+`Representative` audio seemed more tractable. Although there is no absolute objective measure I could use, deep learning at it's core is about generating latent representations of something (text/audio/images) - therefore it seemed reasonable to use a model to generate a latent representation of the audio (or the generated text transcript), and then use that representation to find the most similar clip.
 
 
 ### My Solution to the Problem
@@ -45,17 +45,17 @@ As mentioned above, I think the main risk with my solution, is that it may be at
 
 One approach I experimented with, was using a text-summarization model to generate a summary of the podcast. This summary, could then be used to generate a representation of the podcast - this time using a document embedding model. We could then generate candidate clips, also embedding them at the document level, and then finding the most similar clip to the podcast summary.
 
-There were a few obstacles to this approach, that are worth mentioning (and ultimately why I went with the simpler approach above): 
-1. Text summarization models are typically trained on news articles, which are typically much shorter than a podcast. I was not sure how well this would work on a podcast. They also typically have a token limit, which would be a problem for a podcast.
+There were a couple of obstacles to this approach, that are worth mentioning (and ultimately why I went with the simpler approach above): 
+1. Text summarization models are typically trained on news articles, which are typically much shorter than a podcast. I was not sure how well this would work on a podcast. They also have a token limit, which would be a problem for a podcast.
 2. The sliding window approach to candidate clips, would not work well with a document embedding model. The model would need to be run on each candidate clip, which would be very slow.
 
-## Implemenation & Deployment
+## Implementation & Deployment
 
-Typically for Machine Learning POCs, I find it useful to draw a line between the solution and the deployment. This is because the deployment of a POC, is almost always a temporary implementation. I will build out a python module that implements the solution, and then I will have the deployment consume that implementation.
+Typically for Machine Learning POCs, I find it useful to draw a line between the solution and the deployment. This is because the deployment of a POC, is almost always a temporary implementation. I therefore like to build out a python module that implements the solution, and then I will have the deployment consume that implementation.
 
 This allows me to focus on iterating on the solution (often in a Jupyter Notebook), and then I can focus on the deployment once I am happy with the solution.
 
-NB: I am assuming that the user has access audio transcripts in the same format as the sample data. I have intentionally not built any data validation into this POC.
+NB: I am assuming that the user has access audio transcripts in the same format as the sample data. I have intentionally not built any data validation into this POC, although this is clearly very important for a production solution.
 
 ### The Python Module
 
@@ -84,7 +84,7 @@ It has four main sets of functionality, which are shown in [demo.ipynb](demo.ipy
 4. Get the audio file of the best clip of audio using the `_id` returned in Step 1
 
 
-A full run-through of utilizing the API is shown in [demo.ipynb](demo.ipynb). The demo should allow you to run the API locally, and then interact with it using the `requests` library - at the end of the demo, you should be able to play the resulting audio clip from within the notebook!S
+A full run-through of utilizing the API is shown in [demo.ipynb](demo.ipynb). The demo should allow you to run the API locally, and then interact with it using the `requests` library - at the end of the demo, you should be able to play the resulting audio clip from within the notebook!
 
 One notable decision I made was to utilize a local file system to store the audio and transcript results. This is because I wanted to keep the POC simple, and I did not want to have to worry about setting up a database & large artifact store. However, this is not a scalable solution, and would need to be replaced with a database in a production environment.
 
