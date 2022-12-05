@@ -16,7 +16,7 @@ With regards to #2, it is likely a customer-facing solution would require analys
 
 For #3, the following text was key, that the solution should `highlight engaging or representative spots`. I decided there was no effective way to highlight `engaging` spots in the audio given the data - this would likely require user feedback data, potentially A/B testing different clips of audio, to generate a score for measuring engagement. 
 
-`Representative` audio seemed more tractable. Although there is no absolute objective measure I could use, deep learning at it's core is about generating latent representations of something (text/audio/images) - therefore it seemed reasonable to use a model to generate a latent representation of the audio (or the generated text transcript), and then use that representation to find the most similar clip.
+`Representative` audio seemed more tractable. Although there is no absolute objective measure I could use, deep learning at it's core is about generating latent representations of something (text/audio/images) - therefore it seemed reasonable to use a model to generate a latent representation of the audio (or the generated text transcript), and use the similarity between the representation and the representation of a candidate clip as a second-order objective measure.
 
 
 ### My Solution to the Problem
