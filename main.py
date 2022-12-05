@@ -8,7 +8,6 @@ from pydantic import BaseModel
 from fastapi import FastAPI, Request, BackgroundTasks, UploadFile
 
 
-
 from clipper import Clipper
 
 app = FastAPI()
@@ -25,6 +24,7 @@ def process_clip(_id, data):
 
     print("Done processing clip")
 
+
 def cut_audio(_id, result, audio):
     """Cut audio from result"""
     save_loc = f"/tmp/{_id}_clip.wav"
@@ -35,20 +35,21 @@ def cut_audio(_id, result, audio):
 
 
 @app.post("/clip")
-async def clip(request:Request, background_tasks: BackgroundTasks):
+async def clip(request: Request, background_tasks: BackgroundTasks):
     """Upload audio transcript to kick off processing"""
     body = await request.body()
     data = json.loads(body)
-    
+
     _id = str(uuid.uuid4())
 
     # Processes  processing in the background
-    background_tasks.add_task(process_clip, _id=_id,  data=data)
+    background_tasks.add_task(process_clip, _id=_id, data=data)
 
     return {"_id": _id}
 
+
 @app.post("/clip/upload_audio/{_id}")
-async def upload_file(_id: str, file:UploadFile):
+async def upload_file(_id: str, file: UploadFile):
     """Upload audio file if required"""
 
     contents = await file.read()
@@ -56,6 +57,7 @@ async def upload_file(_id: str, file:UploadFile):
         f.write(contents)
 
     return {"_id": _id}
+
 
 @app.get("/clip/get_text/{_id}")
 async def get_text(_id: str):
@@ -67,7 +69,12 @@ async def get_text(_id: str):
     except FileNotFoundError:
         return {"error": "not found"}
 
-    return {'text': result['text'], 'window_start_token': result['window_start_token'], 'window_end_token': result['window_end_token']}
+    return {
+        "text": result["text"],
+        "window_start_token": result["window_start_token"],
+        "window_end_token": result["window_end_token"],
+    }
+
 
 @app.get("/clip/get_audio/{_id}")
 async def get_audio(_id: str):
@@ -86,4 +93,4 @@ async def get_audio(_id: str):
 
     save_loc = cut_audio(_id, result, audio)
 
-    return {'audio_loc':save_loc}
+    return {"audio_loc": save_loc}
